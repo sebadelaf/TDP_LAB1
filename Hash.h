@@ -2,20 +2,19 @@
 #define HASH_H
 
 #include "State.h"
-#include <iostream>
-#include <string>
-using namespace std;
-
-#define SIZE 1000000
 
 class Hash {
+private:
+    State** table;  // Tabla hash que almacena punteros a estados
+
+    // Función para generar una clave única para un estado basado en sus recipientes
+    int generateKey(State* state);
+
 public:
-    State *table[SIZE]; 
     Hash();
-    void insert(State* state);
-    bool find(State* state);
-    void clear();
     ~Hash();
+    void insert(State* state);  // Insertar un estado en la tabla
+    bool find(State* state);    // Buscar un estado en la tabla
 };
 
 #endif // HASH_H

@@ -1,37 +1,53 @@
 #include "Hash.h"
+#include "State.h"
+#include <cmath>
 
-// Constructor
-Hash::Hash(){
-    for(int i = 0; i < SIZE; i++){
-        table[i] = NULL;
+const int TABLE_SIZE = 10000;
+
+Hash::Hash() {
+    table = new State*[TABLE_SIZE];
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        table[i] = nullptr;
     }
-}
-// Funcion que inserta un state en la tabla
-void Hash::insert(State* state){
-    int key = state->a0 * 1000 + state->a1; //key es la suma de a0 y a1
-    while(table[key] != NULL){ //mientras la tabla en la posicion key no sea nula
-        key = (key + 1) % SIZE; //key es igual a la suma de key y 1 modulo SIZE
-    }
-    table[key] = state; //la tabla en la posicion key es igual a state
-}
-// Funcion que busca un state en la tabla
-bool Hash::find(State* state){
-    int key = state->a0 * 1000 + state->a1; //key es la suma de a0 y a1
-    while(table[key] != NULL){ //mientras la tabla en la posicion key no sea nula
-        if(table[key]->a0 == state->a0 && table[key]->a1 == state->a1){ //si la tabla en la posicion key es igual a state
-            return true; //retorna verdadero
-        }
-        key = (key + 1) % SIZE; //key es igual a la suma de key y 1 modulo SIZE
-    }
-    return false; //retorna falso
 }
 
-void Hash::clear(){
-    for(int i = 0; i < SIZE; i++){ //para i desde 0 hasta SIZE
-        if(table[i] != NULL){ //si la tabla en la posicion i no es nula
-            delete table[i]; //borra la tabla en la posicion i
+Hash::~Hash() {
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        if (table[i] != nullptr) {
+            delete table[i];
         }
     }
+    delete[] table;
 }
 
+// Generar una clave única para un estado basado en los volúmenes de los recipientes
+int Hash::generateKey(State* state) {
+    int key = 0;
+    for (int i = 0; i < state->numRecipientes; i++) {
+        key += state->recipientes[i] * pow(31, i);
+    }
+    return key % TABLE_SIZE;
+}
 
+// Insertar un estado en la tabla hash
+void Hash::insert(State* state) {
+    int key = generateKey(state);
+    table[key] = state;
+}
+
+// Buscar un estado en la tabla hash
+bool Hash::find(State* state) {
+    int key = generateKey(state);
+
+    if (table[key] != nullptr) {
+        bool igual = true;
+        for (int i = 0; i < state->numRecipientes; i++) {
+            if (table[key]->recipientes[i] != state->recipientes[i]) {
+                igual = false;
+                break;
+            }
+        }
+        return igual;
+    }
+    return false;
+}

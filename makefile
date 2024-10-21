@@ -1,25 +1,37 @@
-FLAGS = -g
-#FLAGS = -O2
+# Variables
+CXX = g++
+CXXFLAGS = -std=c++11 -Wall -g
 
-all: test_Queue test_Jug
+# Archivos de clase
+OBJ = Jug.o State.o Queue.o Operation.o Hash.o
 
-test_Queue: State.o Queue.o test_Queue.cpp
-	g++ ${FLAGS} State.o Queue.o test_Queue.cpp -o test_Queue
+# Target para compilar el programa principal
+all: main
 
-test_Jug: State.o Queue.o Hash.o Jug.o test_Jug.cpp
-	g++ ${FLAGS} State.o Queue.o Hash.o Jug.o test_Jug.cpp -o test_Jug
+# Compilar el programa principal
+main: main.o $(OBJ)
+	$(CXX) $(CXXFLAGS) -o main main.o $(OBJ)
 
-State.o: State.h State.cpp
-	g++ ${FLAGS} -c State.cpp
+# Reglas para compilar cada clase .cpp en su respectivo .o
+Jug.o: Jug.cpp Jug.h Operation.h Queue.h Hash.h
+	$(CXX) $(CXXFLAGS) -c Jug.cpp
 
-Hash.o: Hash.h Hash.cpp
-	g++ ${FLAGS} -c Hash.cpp
+State.o: State.cpp State.h
+	$(CXX) $(CXXFLAGS) -c State.cpp
 
-Queue.o: Queue.h Queue.cpp
-	g++ ${FLAGS} -c Queue.cpp
+Queue.o: Queue.cpp Queue.h State.h
+	$(CXX) $(CXXFLAGS) -c Queue.cpp
 
-Jug.o: Jug.h Jug.cpp
-	g++ ${FLAGS} -c Jug.cpp
+Operation.o: Operation.cpp Operation.h State.h
+	$(CXX) $(CXXFLAGS) -c Operation.cpp
 
+Hash.o: Hash.cpp Hash.h State.h
+	$(CXX) $(CXXFLAGS) -c Hash.cpp
+
+# Compilar el archivo principal
+main.o: main.cpp Jug.h
+	$(CXX) $(CXXFLAGS) -c main.cpp
+
+# Limpiar los archivos generados
 clean:
-	rm -f *.o test_Queue test_Jug
+	rm -f *.o main

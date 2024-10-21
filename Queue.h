@@ -4,18 +4,23 @@
 #include "State.h"
 
 class Queue {
-public:
-    int front;
-    int back;
+private:
     int size;
-    State **arr;
+    int count;
+    State** heap;
 
-    void push(State *s);
-    State *pop();
-    bool find(State *s);
-    Queue(); 
+    void heapify_up(int index);
+    void heapify_down(int index);
+    void resize();
+
+public:
     Queue(int size);
+    ~Queue();
+
+    void push(State* s);
+    State* pop();
     int cantidad_elementos();
+    bool find(State* s);
 };
 
 #endif // QUEUE_H

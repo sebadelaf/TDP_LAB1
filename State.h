@@ -3,16 +3,27 @@
 
 #include <iostream>
 #include <string>
-using namespace std;
 
 class State {
 public:
-    int a0;
-    int a1;
-    State *parent;
+    int* recipientes;
+    int numRecipientes;
+    State* parent;
     std::string operation;
+    int g;
+    int h;
 
-    State(int a0, int a1, State *parent, std::string operation);
+    State(int numRecipientes, int* inicial, State* parent, std::string operation, int g, int h);
+    ~State();
+
+    int f() const { return g + h; }
+
+    static int calcularHeuristica(int* estadoActual, int* objetivo, int numRecipientes, int* capacidades);
+
+    bool operator<(const State& other) const { return this->f() > other.f(); }
+
+    bool esIgual(State* otroEstado);
+
     void print();
 };
 
